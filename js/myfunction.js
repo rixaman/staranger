@@ -149,11 +149,15 @@ function checkDestruction()
 	pjs.game.stop();
 
 	alert("Печалька, но вы проиграли!Очков" + points);
-	// $.post("./ajax.php",{points:"record"},
-	// 	function(data)
-	// 	{
-	// 		alert(data);
-	// 	});	
+
+	$.post("/ajax.php", { points: points })
+		.done(function(data)
+		{
+			console.log(data);
+		})
+		.fail(function() {
+			console.log( "error" );
+		});
 }
 //-------------------------------------------
 //вывод текста
