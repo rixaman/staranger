@@ -3,7 +3,8 @@ var kbox=[], 		//противники
 	packet=[], 		//снаряды игрока
 	evilRocket=[],  //снаряды противника
 	boomPoint=[],	//анимации взрывов
-	drop = [];		//обьекты анимации дропа
+	drop = [],		//обьекты анимации дропа
+	object = [];
 
 var bossPart1 = false,
 	bossPart2 = false;
@@ -53,6 +54,7 @@ var camera = pjs.camera;
 var wh = game.getWH();
 var getmaxx = wh.w;
 var getmaxy = wh.h;	
+var aspect = (getmaxx / getmaxy);
 
 //---------------------------------------------------
 //инициализация контроля клавиатуры и мыши
@@ -91,31 +93,40 @@ OOP.forInt(1000, function () {
 	var tile2 = pjs.tiles.newImage('imgs/bigboom.png');
 	var tile3 = pjs.tiles.newImage('imgs/spaceship.png');
 	var tile4 = pjs.tiles.newImage('imgs/packet.png');
+	var tile42 = pjs.tiles.newImage('imgs/evilpacket.png');
 	var tile5 = pjs.tiles.newImage('imgs/enemy.png');
 	var tile6 = pjs.tiles.newImage('imgs/enemy1.png');
+	var tile7 = pjs.tiles.newImage('imgs/shild.png');
 
 	var spaceshipboom = {
 		ssboom:tile1.getAnimation(0, 0, 64.4, 64, 9),
 	}
-
 	var animGalaxyGa = {
 		boom:tile2.getAnimation(0, 0, 39, 40, 13),
 	}
 	var spaceShip= {
 		ship:tile3.getAnimation(0, 0, 50, 50, 1),
 	}
+	//pocket
 	var animpacket = {
 		packet:tile4.getAnimation(0, 0, 50, 50, 2),
 	}
-
+	//evil pocket
+	var animevilpacket = {
+		evilpacket:tile42.getAnimation(0, 0, 50, 50, 2),
+	}
 	var animenemy = {
 		enemy:tile5.getAnimation(0, 0, 65, 60, 1),
 	}
-
 	var animenemy1 = {
 		enemy1:tile6.getAnimation(0, 0, 96, 82, 1),
 	}
-	
+
+	var animshild = {
+		shild:tile7.getAnimation(0, 0, 128, 128, 2),
+	}
+
+
 
 	//craft
 	//------------------------------------------
@@ -130,8 +141,6 @@ OOP.forInt(1000, function () {
 
 	//------------------------------------------
 
-	
-
 //игрок
 //----------------------------------------------
 var spacecar = game.newAnimationObject({  
@@ -141,8 +150,6 @@ var spacecar = game.newAnimationObject({
 });
 spacecar.life = spacecarlife;
 //----------------------------------------------
-
-
 
 //--------GAME---MENU----------------------------
 //-----------------------------------------------
@@ -284,6 +291,15 @@ game.newLoop('game', function()
 				case 1500: 	{speedkbox=5;  break;}
 			}
 
+
+
+			//осколки
+			//---------------------------------------------------------
+			//createDebris(позиция создания, количество осколков,время жизни мин, время жизни максимум, цвет осколков,размер осколка);
+			createDebris(kbox[i].getPosition(),10,100,150,"green",5);
+
+			//---------------------------------------------------------
+
 			//при убийстве противника есть вероятность выпадения drop'а
 			craftCreateDrop(kbox[i].getPosition(),20);
 
@@ -314,7 +330,7 @@ game.newLoop('game', function()
 							//минус жизнь игроку 
 							spacecar.life--;
 							//удаляем взорвавшегося противника
-							kbox.splice(i,1);
+							kbox.splice(i,1);					
 						} else
 						{
 							//добавить анимацию взрыва игрока
@@ -331,6 +347,8 @@ game.newLoop('game', function()
 	spacecar.draw();
 	//отрисовываем жизни над игроком
 	lifeDraw(spacecar);
+	//отрисовка оскольков	
+	drawDebris();
 
 	//таймер появления противника
 	if (kboxcreatebool==true) 

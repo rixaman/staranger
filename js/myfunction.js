@@ -1,3 +1,48 @@
+
+
+//осколки
+//-------------------------------------------------------------
+function createDebris(pos,col,colmin,colmax,color,fragment_size)
+{
+	for (q = 0; q < col; q++) 
+	{
+		timeobject = game.newRectObject(
+		{
+	  		x : pos.x - 5, y : pos.y - 5,
+	   		w : fragment_size*aspect, h : fragment_size*aspect,
+	   		fillColor :color,
+		});
+	timeobject.dx = pjs.math.random(-50, 50, true) * 0.1;
+	timeobject.dy = pjs.math.random(-50, 50, true) * 0.1;
+	timeobject.settimer = 0;
+	timeobject.settimermax = irand(colmin, colmax);
+	object.push(timeobject);
+  	}
+}
+
+//орисовка осколков
+function drawDebris()
+{
+		if (object) 
+		{ 
+		var dt = game.getDT(50);
+			for (i = 0; i <  objLenght(object); i++) 
+			{
+				el = object[i];
+				//if (!el.isInCameraStatic()) return;
+    			el.move(point(el.dx*dt, el.dy*dt));
+    			el.settimer = el.settimer + 1;
+
+    			el.draw();
+    			if (el.x + el.w > getmaxy || el.x < 0) { el.dx *= -1; }
+    			if (el.y + el.h > getmaxx || el.y < 0) { el.dy *= -1; }
+    			if (el.settimer>el.settimermax) {object.splice(i,1);}
+			}
+		}
+}
+//-------------------------------------------------------------
+
+
 //*************************************************************
 //begin craft
 //-------------------------------------------------------------
@@ -32,6 +77,7 @@ function craftDrawDrop()
 	}
 }
 //-------------------------------------------------------------
+
 //-------------------------------------------------------------
 function craftCreateDrop(poskbox,x)
 {
@@ -42,7 +88,7 @@ function craftCreateDrop(poskbox,x)
 							//создаем анимационный обьект аптечка  
 							timeDrop = new game.newAnimationObject({animation:addcraft1.addlife,delay:15,w:25,h:25,x:poskbox.x,y:poskbox.y})
 							timeDrop.type = "life";
-							console.log(timeDrop);
+							//console.log(timeDrop);
 							drop.push(timeDrop);
 							break;
 						}
@@ -73,7 +119,7 @@ function craftCreateDrop(poskbox,x)
 //-------------------------------------------------------------
 //end craft
 
-
+//-------------------------------------------------------------
 function lifeDraw(kbox)
 {
 	//console.log(kbox);	
@@ -96,7 +142,7 @@ function lifeDraw(kbox)
 		font : 'serif'
 	});
 }
-
+//-------------------------------------------------------------
 
 //отрисовка и движение звезд на заднем фоне, и видимость их в пределах видимости игрока
 function skyDrawMove(pos, dist)
@@ -148,18 +194,23 @@ function checkDestruction()
 
 	pjs.game.stop();
 
+	mame = "anonimouse";
+	myjson = {"name": name, "score": points};
+	$.post("./php/score_record.php",{p:"record", myjson:myjson},
+	function(data)
+		{
+			if (data!="error")
+				{
+					var listArray = JSON.parse(data);
+					console.log(listArray);
+				}
+		});
+
 	alert("Печалька, но вы проиграли!Очков" + points);
 
-	$.post("/ajax.php", { points: points })
-		.done(function(data)
-		{
-			console.log(data);
-		})
-		.fail(function() {
-			console.log( "error" );
-		});
 }
 //-------------------------------------------
+
 //вывод текста
 //-------------------------------------------
 function textDraw()
@@ -182,7 +233,7 @@ function textDraw()
 	});
 
 	brush.drawText({
-		x : 250, y : 30,
+		x : 10, y : 70,
 		text : 'speed: '+speedkbox,
 		color : 'green',
 		size : 30,
@@ -200,6 +251,7 @@ function textDraw()
 
 }
 //-------------------------------------------
+
 //проиграть анимацию взрыва ракеты
 //-------------------------------------------
 function boomDraw(objx,objy,thisanim)
@@ -262,7 +314,7 @@ function keyIsDown()
 			}
 	}
 
-	if ((key.isPress('SPACE'))||(mouse.isPress('LEFT')))  
+	if (mouse.isPress('LEFT'))  
 	{   
 		//console.log("mouse left click"); 
 		scpos = spacecar.getPosition();
@@ -312,7 +364,6 @@ if (mouse.isPress('RIGHT'))
 				//game.resume();
 			}	
 		}
-
 }
 //-------------------------------------------
 
@@ -375,21 +426,19 @@ function createboss(x)
 
 for (var i=0;i<x;i++) 
 	{
-
-	var boss = new game.newAnimationObject({animation:animenemy1.enemy1,delay:25,w:96,h:82});
-	boss.life = 10;
-	rand = irand(1, 4);
-	wh = game.getWH();
-	switch(rand)
-	{
-		case 1: {boss.x = -30;boss.y = -30;break;}
-		case 2: {boss.x = -30;boss.y = wh.w+30;break;}
-		case 3: {boss.x = wh.h+30;boss.y = wh.w+30;break;}
-		case 4: {boss.x = wh.w+30;boss.y = -30;break;}
-	} 
-	kboss.push(boss);
-	//прописать фалсе когда босс уничтожен
-	//bosscreatebool = false;
+		var boss = new game.newAnimationObject({animation:animenemy1.enemy1,delay:25,w:96,h:82});
+		boss.life = 10;
+		rand = irand(1, 4);
+		wh = game.getWH();
+		switch(rand)
+		{
+			case 1: {boss.x = -30;boss.y = -30;break;}
+			case 2: {boss.x = -30;boss.y = wh.w+30;break;}
+			case 3: {boss.x = wh.h+30;boss.y = wh.w+30;break;}
+			case 4: {boss.x = wh.w+30;boss.y = -30;break;}
+		} 
+		kboss.push(boss);
+		//прописать фалсе когда босс уничтожен
 	}
 }
 
@@ -410,12 +459,13 @@ if (kboss)
 			kboss[i].moveAngle(speedboss);	
 			//поворачиваем босса в сторону игрока
 			kboss[i].rotate(spacecar.getPosition(1));
+
 			//если столкнулись с игроком
 			if (kboss[i].isDynamicIntersect(spacecar.getDynamicBox()))
 				{
-					
+					checkDestruction();	
 				} 
-			//научить стрелять evilRocketами
+
 			//стрельба
 			shot = irand(1, 30);
 			switch(shot)
@@ -428,7 +478,6 @@ if (kboss)
 				case 2: {break;}
 			}		
 			//конец стрельбы
-
 			//действия босса
 		}
 	}
@@ -458,7 +507,6 @@ if ((kboss)&&(packet))
 									countingPoints(100);
 									craftCreateDrop(kboss[i].getPosition(),1);
 									kboss.splice(i,1);
-									bosscreatebool = false;
 								}
 							//рисуем взрыв
 							boomDraw(packet[j].getPosition().x,packet[j].getPosition().y,animGalaxyGa.boom);
@@ -472,6 +520,10 @@ if ((kboss)&&(packet))
 							//packet[j].angle = kboss[i].angle;
 							//packet[j].moveAngle(speed*1);
 							//нарисовать вокруг карабля энергетический всплеск!	
+							//boomDraw(kboss[i].getPosition().x,kboss[i].getPosition().y,animshild.shild);
+							timeAnimation = new game.newAnimationObject({animation:animshild.shild,delay:20,w:120,h:120,x:kboss[i].getPosition().x,y:kboss[i].getPosition().y});
+							timeAnimation.angle = kboss[i].angle;
+							boomPoint.push(timeAnimation);
 							packet.splice(j,1);						
 						}	
 				}
@@ -538,9 +590,8 @@ function packetDraw()
 //координата x,координата y, угол поворота angle стреляющего
 function evilRocketCreate(posx,posy,angle)
 {
-		newevilRocket = new game.newAnimationObject({animation:animpacket.packet,delay:3,w:25,h:25,x:posx,y:posy});
+		newevilRocket = new game.newAnimationObject({animation:animevilpacket.evilpacket,delay:3,w:25,h:25,x:posx,y:posy});
 		newevilRocket.angle = angle;
-		console.log(newevilRocket);
 		evilRocket.push(newevilRocket);
 }
 
