@@ -180,6 +180,7 @@ function checkWin()
 		spacecar.setVisible(false);
 		pjs.game.stop();
 		alert("(.)(.)");
+		recordPoints();
 }
 
 //вызывает проигрыш и завершает игру
@@ -196,9 +197,12 @@ function checkDestruction()
 
 	alert("Печалька, но вы проиграли!Очков" + points);
 
-	// name = "anonimouse";
-	// myjson = {"name": name, "score": points};
-	
+	recordPoints();
+}
+
+// запись очков
+function recordPoints()
+{
 	$.post("/ajax.php", { points: points })
 		.done(function(data)
 		{
@@ -207,8 +211,6 @@ function checkDestruction()
 		.fail(function() {
 			console.log( "error" );
 	});
-
-
 }
 //-------------------------------------------
 
