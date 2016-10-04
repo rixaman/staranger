@@ -14,11 +14,15 @@ if (file_exists('score.json')) {
 file_put_contents('score.json', $score);
 
 echo 'yeah';
-die();
 
-if ($p=="record") 
-{
-	$json = $p;
+
+
+
+// die();
+
+// if ($p=="record") 
+// {
+// 	$json = $p;
 
 	// file_put_contents('score.json', $json);
 
@@ -53,5 +57,5 @@ if ($p=="record")
 	// {
 	// 	echo "error";
 	// }
-}
+// }
 ?>

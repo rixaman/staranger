@@ -194,8 +194,11 @@ function checkDestruction()
 
 	pjs.game.stop();
 
+	alert("Печалька, но вы проиграли!Очков" + points);
+
 	// name = "anonimouse";
 	// myjson = {"name": name, "score": points};
+	
 	$.post("/ajax.php", { points: points })
 		.done(function(data)
 		{
@@ -205,7 +208,6 @@ function checkDestruction()
 			console.log( "error" );
 	});
 
-	alert("Печалька, но вы проиграли!Очков" + points);
 
 }
 //-------------------------------------------
